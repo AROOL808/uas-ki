@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto fade-in">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Encoding Successful!</h1>
+    
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold mb-4">Your Encoded Image</h2>
+        <div class="border border-gray-200 rounded-lg overflow-hidden mb-4">
+            <img src="data:image/png;base64,{{ image_data }}" alt="Encoded Image" class="w-full">
+        </div>
+        <a href="{{ url_for('download', filename=filename) }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block transition">
+            Download Image
+        </a>
+    </div>
+    
+    <div class="text-center">
+        <a href="{{ url_for('encode') }}" class="text-blue-600 hover:text-blue-800 font-medium">Encode Another Message</a>
+    </div>
+</div>
+{% endblock %}

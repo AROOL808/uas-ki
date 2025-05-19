@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto fade-in">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Decoding Successful!</h1>
+    
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold mb-4">Encoded Image</h2>
+        <div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
+            <img src="data:image/png;base64,{{ image_data }}" alt="Encoded Image" class="w-full">
+        </div>
+        
+        <h2 class="text-xl font-semibold mb-2">Hidden Message</h2>
+        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+            <p class="whitespace-pre-wrap">{{ message }}</p>
+        </div>
+    </div>
+    
+    <div class="text-center">
+        <a href="{{ url_for('decode') }}" class="text-blue-600 hover:text-blue-800 font-medium">Decode Another Image</a>
+    </div>
+</div>
+{% endblock %}

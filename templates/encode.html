@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto fade-in">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Encode a Secret Message</h1>
+    
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="prompt">AI Image Prompt</label>
+            <input type="text" id="prompt" name="prompt" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <p class="text-gray-500 text-sm mt-1">Describe the image you want to generate</p>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="message">Secret Message</label>
+            <textarea id="message" name="message" required rows="4"
+                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-gray-700 font-bold mb-2" for="public_key">Public Key (RSA)</label>
+            <textarea id="public_key" name="public_key" required rows="6"
+                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"></textarea>
+            <div class="flex justify-between items-center mt-2">
+                <p class="text-gray-500 text-sm">Paste your RSA public key</p>
+                <button type="button" id="generate-keys" class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Generate New Keys
+                </button>
+                <p class="text-gray-500 text-sm mt-2">Note: The private key will be downloaded automatically. Save it securely as it cannot be recovered.</p>
+            </div>
+        </div>
+        
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">
+                Generate & Encode
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('generate-keys').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        try {
+            const response = await fetch("{{ url_for('generate_keys') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            const keys = await response.json();
+            document.getElementById('public_key').value = keys.public_key;
+            
+            // Create download link for private key
+            const blob = new Blob([keys.private_key], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'private_key.pem';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show success message
+            alert('Key pair generated successfully! Private key downloaded as private_key.pem');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to generate keys. Please try again.');
+        }
+    });
+</script>
+{% endblock %}
